@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <script src="https://kit.fontawesome.com/8744931b12.js" crossorigin="anonymous"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 78px;
+            background: #11101D;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar .logo-details .icon {
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar .logo-details .logo_name {
+            padding-top: 20px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details .icon,
+        .sidebar.open .logo-details .logo_name {
+            opacity: 1;
+        }
+
+        .sidebar .logo-details #btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .logo-details #btn {
+            text-align: right;
+        }
+
+        .sidebar i {
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .sidebar .nav-list {
+            margin-top: 20px;
+            height: 100%;
+        }
+
+        .sidebar li {
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+        }
+
+        .sidebar li .tooltip {
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar li:hover .tooltip {
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar.open li .tooltip {
+            display: none;
+        }
+
+        .sidebar li a {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #11101D;
+        }
+
+        .sidebar li a:hover {
+            background: #FFF;
+        }
+
+        .sidebar li a .links_name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+
+        .sidebar.open li a .links_name {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar li a:hover .links_name,
+        .sidebar li a:hover i {
+            transition: all 0.5s ease;
+            color: #11101D;
+        }
+
+        .sidebar li i {
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+        }
+
+        .sidebar li.profile {
+            position: fixed;
+            height: 60px;
+            width: 78px;
+            left: 0;
+            bottom: -8px;
+            padding: 10px 14px;
+            background: #1d1b31;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .sidebar .profile #log_out {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: #1d1b31;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 0px;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.open .profile #log_out {
+            width: 50px;
+            background: none;
+        }
+
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        .sidebar.open~.home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .home-section .text {
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px
+        }
+
+        @media (max-width: 420px) {
+            .sidebar li .tooltip {
+                display: none;
+            }
+        }
+
+        .logout {
+            position: absolute;
+            float: right;
+            right: 30px;
+            top: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px #e4e9f0;
+            height: 30px;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logout .logout-text {
+            display: none;
+        }
+
+        .logout:hover .logout-text {
+            display: block;
+        }
+
+        .logout:hover {
+            justify-content: space-around;
+            animation: logout-expand;
+            animation-duration: 0.4s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes logout-expand {
+            from {
+                width: 30px;
+            }
+
+            to {
+                width: 100px;
+            }
+        }
+
+        #style-4::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #F5F5F5;
+        }
+
+        #style-4::-webkit-scrollbar {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #style-4::-webkit-scrollbar-thumb {
+            background-color: #000000;
+            border: 2px solid #555555;
+        }
+
+        h1#header {
+            text-align: center;
+            padding: 50px;
+            font-size: 62px;
+            font-family: "Pacifico";
+            text-shadow: 0 2px 2px #3c77b3;
+        }
+
+        .article-wrapper {
+            -moz-transition: width 0.4s;
+            -o-transition: width 0.4s;
+            -webkit-transition: width 0.4s;
+            transition: width 0.4s;
+        }
+
+        article {
+            position: relative;
+            padding-left: 180px;
+            padding-right: 75px;
+            height: 150px;
+            margin-bottom: 30px;
+            background-color: #FFF;
+            -moz-border-radius: 150px;
+            -webkit-border-radius: 150px;
+            border-radius: 150px;
+            cursor: pointer;
+        }
+
+        article .img-wrapper {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            -moz-border-radius: 100px;
+            -webkit-border-radius: 100px;
+            border-radius: 100px;
+            background-color: #CDE;
+            padding: 10px;
+            z-index: 1000;
+            -moz-transition: all 0.2s;
+            -o-transition: all 0.2s;
+            -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+        }
+
+        article .img-wrapper img {
+            -moz-border-radius: 100px;
+            -webkit-border-radius: 100px;
+            border-radius: 100px;
+            -moz-transition: all 0.2s;
+            -o-transition: all 0.2s;
+            -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+            width: 150px;
+        }
+
+        article h1 {
+            height: 75px;
+            line-height: 75px;
+            font-size: 24px;
+            border-bottom: 2px solid #CDE;
+            color: #428bca;
+            -moz-transition: all 0.4s;
+            -o-transition: all 0.4s;
+            -webkit-transition: all 0.4s;
+            transition: all 0.4s;
+        }
+
+        article p {
+            color: #888;
+        }
+
+        article a {
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+            height: 100%;
+            line-height: 150px;
+            text-align: center;
+            width: 100%;
+            background-color: #FFF;
+            font-size: 48px;
+            font-style: italic;
+            opacity: 0;
+            color: #428bca !important;
+            -moz-transition: all 0.4s;
+            -o-transition: all 0.4s;
+            -webkit-transition: all 0.4s;
+            transition: all 0.4s;
+            text-decoration: none !important;
+            -moz-border-radius: 150px;
+            -webkit-border-radius: 150px;
+            border-radius: 150px;
+            font-family: "Pacifico";
+            text-shadow: 0 1px 1px #AAA;
+        }
+
+        article:hover .img-wrapper {
+            padding: 5px;
+            -moz-transform: rotate(5deg);
+            -ms-transform: rotate(5deg);
+            -webkit-transform: rotate(5deg);
+            transform: rotate(5deg);
+        }
+
+        article:hover .img-wrapper img {
+            width: 160px;
+        }
+
+        article:hover a {
+            opacity: 1;
+        }
+
+        .bloc article {
+            padding: 10px;
+            height: 225px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            margin-top: 75px;
+        }
+
+        .bloc article .img-wrapper {
+            position: relative;
+            top: -85px;
+            width: 170px;
+            left: inherit;
+            margin: auto;
+            margin-bottom: -100px;
+        }
+
+        .bloc article h1 {
+            font-size: 14px;
+            height: 37.5px;
+            line-height: 37.5px;
+        }
+
+        .bloc article p {
+            font-size: 12px;
+        }
+
+        .bloc article a {
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            line-height: 255px;
+        }
+
+
+        .footer {
+            height: 100px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/logout">
+        <div class="logout">
+            <p class="logout-text">Logout</p><i class="fas fa-sign-out-alt"></i>
+        </div>
+    </a>
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">Medicare</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+            <li>
+                <a href="/">
+                    <i class='bx bxs-dashboard'></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a href="/diagnose">
+                    <i class='fas fa-diagnoses'></i>
+                    <span class="links_name">Diagnose</span>
+                </a>
+                <span class="tooltip">Diagnose</span>
+            </li>
+            <li>
+                <a href="/blog">
+                    <i class='bx bxl-blogger'></i>
+                    <span class="links_name">Blog</span>
+                </a>
+                <span class="tooltip">Blog</span>
+            </li>
+           <li>
+                <a href="/chat">
+                    <i class='bx bxs-chat'></i>
+                    <span class="links_name">Chatroom</span>
+                </a>
+                <span class="tooltip">Chatroom</span>
+            </li>
+
+            <li class="profile">
+                <a href="/signout">
+                    <i class='bx bx-log-out' id="log_out"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="container list-article">
+            <div class="btn-group pull-right" id="switch-view">
+                <button class="btn btn-primary">
+                    <span class="icon-th-large"></span>
+                </button>
+                <button class="btn btn-primary active">
+                    <span class="icon-th-list"></span>
+                </button>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row">
+                <div class="col-xs-12 article-wrapper">
+                    <article>
+                        <a href="#" class="more">more</a>
+                        <div class="img-wrapper"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUlsKxGIXn2EXSbS3jiKfpNfdihODT9Re0sg&usqp=CAU" alt="" /></div>
+                        <h1>Jhon Doe</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, nemo! In sunt quis non, modi minima id quaerat enim eos culpa deleniti, veritatis iusto omnis dignissimos ipsa eligendi, vitae delectus.</p>
+                    </article>
+                </div>
+                <div class="col-xs-12 article-wrapper">
+                    <article>
+                        <a href="#" class="more">more</a>
+                        <div class="img-wrapper"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUlsKxGIXn2EXSbS3jiKfpNfdihODT9Re0sg&usqp=CAU" alt="" /></div>
+                        <h1>Jhon Doe</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, nemo! In sunt quis non, modi minima id quaerat enim eos culpa deleniti, veritatis iusto omnis dignissimos ipsa eligendi, vitae delectus.</p>
+                    </article>
+                </div>
+                <div class="col-xs-12 article-wrapper">
+                    <article>
+                        <a href="#" class="more">more</a>
+                        <div class="img-wrapper"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUlsKxGIXn2EXSbS3jiKfpNfdihODT9Re0sg&usqp=CAU" alt="" /></div>
+                        <h1>Jhon Doe</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab, nemo! In sunt quis non, modi minima id quaerat enim eos culpa deleniti, veritatis iusto omnis dignissimos ipsa eligendi, vitae delectus.</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+        <div class="footer"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js"></script>
+
+    <script>
+
+        let sidebar = document.querySelector(".sidebar");
+        let closeBtn = document.querySelector("#btn");
+        let searchBtn = document.querySelector(".bx-search");
+
+        closeBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+            menuBtnChange();
+        });
+
+        searchBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+            menuBtnChange();
+        });
+
+        // console.log(Cookies.get('csrftoken'));
+
+        function menuBtnChange() {
+            if (sidebar.classList.contains("open")) {
+                closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+            } else {
+                closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+            }
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $("#switch-view").click(function () {
+                $(this).find("button").toggleClass("active");
+                $(".article-wrapper").toggleClass("bloc col-xs-12 col-xs-4");
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('profilename').innerHTML = '{{ user.first_name }}'.split('@')[0]
+    </script>
+</body>
+
+</html>
